@@ -22,11 +22,13 @@ export interface GraphViewerProps {
   index: CatalogIndex;
   selectedId: string | null;
   onNodeSelect: (id: string) => void;
+  /** 태그 필터 통과 노드 id (null = 필터 비활성, 전체 표시). */
+  allowedIds: Set<string> | null;
 }
 
 const nodeTypes = { ssot: SsotNode };
 
-function GraphInner({ index, selectedId, onNodeSelect }: GraphViewerProps): React.JSX.Element {
+function GraphInner({ index, selectedId, onNodeSelect, allowedIds }: GraphViewerProps): React.JSX.Element {
   const allKinds = useMemo(
     () => [...index.kindCounts.keys()].sort((a, b) => KIND_RANK[a] - KIND_RANK[b]),
     [index],
@@ -56,6 +58,7 @@ function GraphInner({ index, selectedId, onNodeSelect }: GraphViewerProps): Reac
   const { nodes, edges } = useMemo(() => {
     const visibleNodeIds = new Set<string>();
     for (const n of index.catalog.nodes) {
+      if (allowedIds && !allowedIds.has(n.id)) continue;
       if (hiddenKinds.has(n.kind)) continue;
       if (ego && !ego.nodeIds.has(n.id)) continue;
       visibleNodeIds.add(n.id);
@@ -102,7 +105,7 @@ function GraphInner({ index, selectedId, onNodeSelect }: GraphViewerProps): Reac
 
     const laidOut = applyDagreLayout(flowNodes, flowEdges, direction);
     return { nodes: laidOut as Node[], edges: flowEdges };
-  }, [index, hiddenKinds, ego, focusMode, selectedId, direction]);
+  }, [index, hiddenKinds, ego, focusMode, selectedId, direction, allowedIds]);
 
   const onNodeClick: NodeMouseHandler = useCallback(
     (_, node) => onNodeSelect(node.id),

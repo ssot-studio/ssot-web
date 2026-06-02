@@ -47,6 +47,8 @@ export interface CatalogNode {
   lifecycle: Lifecycle;
   lastVerified: string;
   openCount: number;
+  /** "namespace:value" 형식 태그 (예: 'domain:auth', 'status:active'). 없으면 생략. */
+  tags?: string[];
   /** 카탈로그가 직렬화한 facet 요약(relatesTo 는 문자열화되어 손실 — 상세는 frontmatter 재파싱). */
   facets: Record<string, unknown>;
 }

@@ -1,11 +1,13 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearch } from '@tanstack/react-router';
 import { useCatalog } from '@/hooks/useCatalog';
 import { detectStructure, type CatalogIndex } from '@/domain/catalog';
+import { collectTagGroups, filterNodeIds } from '@/domain/tags';
 import { GraphViewer } from '@/views/GraphViewer';
 import { TreeViewer } from '@/views/TreeViewer';
 import { MatrixViewer } from '@/views/MatrixViewer';
 import { NodeDetail } from '@/views/NodeDetail';
+import { TagFilterPanel } from '@/views/TagFilterPanel';
 import { useResizablePanel } from '@/hooks/useResizablePanel';
 import type { ViewName } from '@/router';
 
@@ -15,6 +17,18 @@ export function ViewPage(): React.JSX.Element {
   const navigate = useNavigate();
   const query = useCatalog();
   const { width, startDrag } = useResizablePanel();
+
+  // 태그 필터 선택 — 뷰 전환(graph/tree/matrix) 간 유지 (ViewPage 는 /$view 공통 컴포넌트).
+  const [selectedTags, setSelectedTags] = useState<ReadonlySet<string>>(() => new Set());
+  const toggleTag = useCallback((raw: string) => {
+    setSelectedTags((prev) => {
+      const next = new Set(prev);
+      if (next.has(raw)) next.delete(raw);
+      else next.add(raw);
+      return next;
+    });
+  }, []);
+  const clearTags = useCallback(() => setSelectedTags(new Set()), []);
 
   // 노드 선택 = search param 갱신(딥링크/뒤로가기 호환). 뷰 전환 시 선택 유지.
   const selectNode = useCallback(
@@ -26,6 +40,15 @@ export function ViewPage(): React.JSX.Element {
   const closeDetail = useCallback(() => {
     navigate({ to: '/$view', params: { view }, search: {} });
   }, [navigate, view]);
+
+  const tagGroups = useMemo(
+    () => (query.data ? collectTagGroups(query.data.catalog.nodes) : []),
+    [query.data],
+  );
+  const allowedIds = useMemo(
+    () => (query.data ? filterNodeIds(query.data.catalog.nodes, selectedTags) : null),
+    [query.data, selectedTags],
+  );
 
   if (query.isLoading) {
     return <Centered>카탈로그 로딩 중…</Centered>;
@@ -40,8 +63,38 @@ export function ViewPage(): React.JSX.Element {
 
   return (
     <div className="flex h-full">
-      <section className="min-w-0 flex-1">
-        <ViewSwitch view={view} index={index} selectedId={selectedId ?? null} onNodeSelect={selectNode} />
+      <section className="relative min-w-0 flex-1">
+        <ViewSwitch
+          view={view}
+          index={index}
+          selectedId={selectedId ?? null}
+          onNodeSelect={selectNode}
+          allowedIds={allowedIds}
+        />
+        {tagGroups.length > 0 && (
+          <div className="pointer-events-none absolute right-3 top-3 z-10 flex max-h-[calc(100%-1.5rem)] w-60 flex-col">
+            <details className="pointer-events-auto rounded-lg border border-border bg-[var(--surface)]/95 shadow-md backdrop-blur" open>
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-3 py-2 text-xs font-medium text-foreground">
+                <span>태그 필터</span>
+                {allowedIds && (
+                  <span className="rounded bg-[var(--surface-hover)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--foreground-muted)]">
+                    {allowedIds.size}/{index.catalog.nodes.length}
+                  </span>
+                )}
+              </summary>
+              <div className="max-h-[60vh] overflow-y-auto border-t border-border px-3 py-2">
+                <TagFilterPanel
+                  groups={tagGroups}
+                  totalCount={index.catalog.nodes.length}
+                  selected={selectedTags}
+                  onToggle={toggleTag}
+                  onClear={clearTags}
+                  matchedCount={allowedIds ? allowedIds.size : null}
+                />
+              </div>
+            </details>
+          </div>
+        )}
       </section>
       <div
         role="separator"
@@ -75,13 +128,15 @@ function ViewSwitch({
   index,
   selectedId,
   onNodeSelect,
+  allowedIds,
 }: {
   view: ViewName;
   index: CatalogIndex;
   selectedId: string | null;
   onNodeSelect: (id: string) => void;
+  allowedIds: Set<string> | null;
 }): React.JSX.Element {
-  const props = { index, selectedId, onNodeSelect };
+  const props = { index, selectedId, onNodeSelect, allowedIds };
   switch (view) {
     case 'tree':
       return <TreeViewer {...props} />;

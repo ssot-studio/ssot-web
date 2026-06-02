@@ -10,6 +10,8 @@ export interface MatrixViewerProps {
   index: CatalogIndex;
   selectedId: string | null;
   onNodeSelect: (id: string) => void;
+  /** 태그 필터 통과 노드 id (null = 필터 비활성, 전체 표시). */
+  allowedIds: Set<string> | null;
 }
 
 type SortKey = 'title' | 'kind' | 'confidence' | 'lifecycle' | 'relCount' | 'lastVerified';
@@ -22,7 +24,12 @@ interface Row {
   relCount: number;
 }
 
-export function MatrixViewer({ index, selectedId, onNodeSelect }: MatrixViewerProps): React.JSX.Element {
+export function MatrixViewer({
+  index,
+  selectedId,
+  onNodeSelect,
+  allowedIds,
+}: MatrixViewerProps): React.JSX.Element {
   const allKinds = useMemo(
     () => [...index.kindCounts.keys()].sort((a, b) => KIND_RANK[a] - KIND_RANK[b]),
     [index],
@@ -44,6 +51,7 @@ export function MatrixViewer({ index, selectedId, onNodeSelect }: MatrixViewerPr
 
   const rows = useMemo<Row[]>(() => {
     const list = index.catalog.nodes
+      .filter((n) => allowedIds === null || allowedIds.has(n.id))
       .filter((n) => kindFilter === 'all' || n.kind === kindFilter)
       .map<Row>((node) => ({ node, relCount: neighbors(index, node.id).size }));
 
@@ -69,7 +77,7 @@ export function MatrixViewer({ index, selectedId, onNodeSelect }: MatrixViewerPr
       }
     });
     return list;
-  }, [index, kindFilter, sort]);
+  }, [index, kindFilter, sort, allowedIds]);
 
   const toggleSort = (key: SortKey): void =>
     setSort((prev) => ({ key, dir: prev.key === key && prev.dir === 'asc' ? 'desc' : 'asc' }));

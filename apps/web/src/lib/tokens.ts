@@ -38,6 +38,18 @@ const CONFIDENCE_VAR: Record<Confidence, string> = {
   unverified: 'var(--confidence-unverified)',
 };
 
+// 태그 네임스페이스 → 시맨틱 의미색. 새 토큰을 만들지 않고 기존 kind/rel/confidence
+// 토큰을 재사용한다(05-styling: 팔레트 직접참조·하드코딩 금지 — var() 만 반환).
+const NAMESPACE_VAR: Record<string, string> = {
+  domain: 'var(--kind-domain)',
+  area: 'var(--kind-capability)',
+  status: 'var(--rel-realizedby)',
+  team: 'var(--kind-persona)',
+  version: 'var(--kind-flow)',
+  type: 'var(--kind-component)',
+  risk: 'var(--confidence-unverified)',
+};
+
 export function kindColorVar(kind: NodeKind): string {
   return KIND_VAR[kind];
 }
@@ -48,4 +60,8 @@ export function relColorVar(rel: RelType | string): string {
 
 export function confidenceColorVar(confidence: Confidence): string {
   return CONFIDENCE_VAR[confidence] ?? 'var(--rel-default)';
+}
+
+export function namespaceColorVar(namespace: string): string {
+  return NAMESPACE_VAR[namespace] ?? 'var(--rel-default)';
 }

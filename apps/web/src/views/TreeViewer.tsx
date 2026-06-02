@@ -10,18 +10,44 @@ export interface TreeViewerProps {
   index: CatalogIndex;
   selectedId: string | null;
   onNodeSelect: (id: string) => void;
+  /** 태그 필터 통과 노드 id (null = 필터 비활성, 전체 표시). */
+  allowedIds: Set<string> | null;
 }
 
 // 계층 펼침에 자연스러운 방향성 rel 후보(가장 많이 쓰이는 순).
 const TREE_RELS: RelType[] = ['realizedBy', 'governs', 'servesPersona', 'impacts', 'dependsOn'];
 
-export function TreeViewer({ index, selectedId, onNodeSelect }: TreeViewerProps): React.JSX.Element {
+/**
+ * 트리 가지를 필터 통과 집합으로 가지치기한다.
+ *  - 노드 자신이 통과하거나, 후손 중 통과하는 노드가 있으면 가지를 유지(조상 맥락 보존).
+ *  - 둘 다 아니면 가지를 통째로 버린다.
+ */
+function pruneTree(nodes: TreeNode[], allowedIds: Set<string>): TreeNode[] {
+  const result: TreeNode[] = [];
+  for (const node of nodes) {
+    const children = pruneTree(node.children, allowedIds);
+    if (allowedIds.has(node.id) || children.length > 0) {
+      result.push({ ...node, children });
+    }
+  }
+  return result;
+}
+
+export function TreeViewer({
+  index,
+  selectedId,
+  onNodeSelect,
+  allowedIds,
+}: TreeViewerProps): React.JSX.Element {
   const availableRels = useMemo(
     () => TREE_RELS.filter((rel) => (index.relCounts.get(rel) ?? 0) > 0),
     [index],
   );
   const [rel, setRel] = useState<RelType>(availableRels[0] ?? 'realizedBy');
-  const forest = useMemo(() => projectTree(index, rel), [index, rel]);
+  const forest = useMemo(() => {
+    const full = projectTree(index, rel);
+    return allowedIds ? pruneTree(full, allowedIds) : full;
+  }, [index, rel, allowedIds]);
 
   return (
     <div className="flex h-full flex-col">
