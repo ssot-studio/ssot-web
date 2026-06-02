@@ -1,0 +1,210 @@
+@import 'tailwindcss';
+@import '@xyflow/react/dist/style.css';
+
+/* web 앱 전용 스타일 진입점.
+   @repo/ui 의 globals.css 가 베이스 시맨틱 토큰(--background/--foreground/--border)을
+   제공한다. SSOT 뷰어가 필요로 하는 추가 시맨틱 토큰(surface 단계, kind/rel/confidence
+   의미색, 그래프/마크다운)을 여기서 @theme 으로 정의한다. 앱은 베이스 토큰을
+   재정의하지 않고 참조만 한다.
+
+   레이어: 팔레트(color) → 시맨틱(surface/kind/rel 등) → 컴포넌트(CVA).
+   라이트/다크는 동일 시맨틱 변수명을 모드별로 재정의한다 (컴포넌트는 토큰만 참조). */
+
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* ── 팔레트 (의미 부여 전 원색) ── */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-violet-400: #a78bfa;
+  --color-violet-500: #8b5cf6;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-rose-400: #fb7185;
+  --color-rose-500: #f43f5e;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-pink-400: #f472b6;
+  --color-fuchsia-400: #e879f9;
+  --color-lime-400: #a3e635;
+  --color-orange-400: #fb923c;
+  --color-indigo-400: #818cf8;
+  --color-indigo-500: #6366f1;
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+
+  /* ── 시맨틱 (라이트 기본값) ── */
+  --surface: #ffffff;
+  --surface-raised: #f8fafc;
+  --surface-sunken: #f1f5f9;
+  --surface-hover: #eef2f6;
+  --foreground-muted: #64748b;
+  --foreground-subtle: #94a3b8;
+  --border-strong: #cbd5e1;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --ring: #2563eb;
+
+  /* kind 의미색 (10종) */
+  --kind-platform: #8b5cf6;
+  --kind-persona: #06b6d4;
+  --kind-domain: #2563eb;
+  --kind-capability: #10b981;
+  --kind-screen: #6366f1;
+  --kind-endpoint: #14b8a6;
+  --kind-flow: #0ea5e9;
+  --kind-component: #f59e0b;
+  --kind-integration: #fb923c;
+  --kind-concept: #64748b;
+  --kind-invariant: #f43f5e;
+  --kind-rule: #a3e635;
+  --kind-decision: #e879f9;
+
+  /* rel 의미색 (그래프 엣지 + 관계 칩) */
+  --rel-realizedby: #10b981;
+  --rel-servespersona: #06b6d4;
+  --rel-governedby: #f43f5e;
+  --rel-governs: #f43f5e;
+  --rel-impacts: #f59e0b;
+  --rel-dependson: #2563eb;
+  --rel-decidedby: #e879f9;
+  --rel-relatesto: #94a3b8;
+  --rel-default: #94a3b8;
+
+  /* confidence 의미색 */
+  --confidence-high: #10b981;
+  --confidence-inferred: #f59e0b;
+  --confidence-unverified: #f43f5e;
+}
+
+:where([data-theme='dark'], .dark) {
+  --surface: #161d24;
+  --surface-raised: #1c252e;
+  --surface-sunken: #11181b;
+  --surface-hover: #232e38;
+  --foreground-muted: #94a3b8;
+  --foreground-subtle: #64748b;
+  --border-strong: #3a4654;
+  --primary: #60a5fa;
+  --primary-foreground: #0b1220;
+  --ring: #60a5fa;
+
+  --kind-platform: #a78bfa;
+  --kind-persona: #22d3ee;
+  --kind-domain: #60a5fa;
+  --kind-capability: #34d399;
+  --kind-screen: #818cf8;
+  --kind-endpoint: #2dd4bf;
+  --kind-flow: #38bdf8;
+  --kind-component: #fbbf24;
+  --kind-integration: #fb923c;
+  --kind-concept: #94a3b8;
+  --kind-invariant: #fb7185;
+  --kind-rule: #a3e635;
+  --kind-decision: #f472b6;
+
+  --rel-realizedby: #34d399;
+  --rel-servespersona: #22d3ee;
+  --rel-governedby: #fb7185;
+  --rel-governs: #fb7185;
+  --rel-impacts: #fbbf24;
+  --rel-dependson: #60a5fa;
+  --rel-decidedby: #f472b6;
+  --rel-relatesto: #94a3b8;
+  --rel-default: #64748b;
+
+  --confidence-high: #34d399;
+  --confidence-inferred: #fbbf24;
+  --confidence-unverified: #fb7185;
+}
+
+/* ── 마크다운 본문 (NodeDetail) — 토큰만 참조 ── */
+.ssot-markdown {
+  color: var(--foreground);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+.ssot-markdown h2 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.25rem;
+}
+.ssot-markdown h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.375rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.ssot-markdown p {
+  margin: 0.5rem 0;
+}
+.ssot-markdown ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+.ssot-markdown li {
+  margin: 0.2rem 0;
+}
+.ssot-markdown code {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+  font-size: 0.8125rem;
+}
+.ssot-markdown strong {
+  font-weight: 600;
+}
+.ssot-markdown a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* ── xyflow 토큰화 (인라인 hex 금지 — CSS 변수만) ── */
+.react-flow {
+  --xy-background-color: var(--surface-sunken);
+  --xy-edge-stroke: var(--border-strong);
+  --xy-edge-stroke-selected: var(--primary);
+  background: var(--surface-sunken);
+}
+.react-flow__controls-button {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+}
+.react-flow__controls-button:hover {
+  background: var(--surface-hover);
+}
+.react-flow__controls-button svg {
+  fill: var(--foreground);
+}
+.react-flow__minimap {
+  background: var(--surface-raised);
+}
+.react-flow__attribution {
+  display: none;
+}

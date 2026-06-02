@@ -1,0 +1,10 @@
+{
+  "name": "ssot-web-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm --filter @repo/ui build && pnpm --filter web build",
+    "dev": "pnpm --filter web dev",
+    "typecheck": "pnpm -r typecheck"
+  }
+}

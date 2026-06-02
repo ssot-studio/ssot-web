@@ -1,0 +1,36 @@
+{
+  "name": "@repo/daemon",
+  "version": "0.0.0",
+  "description": "SSOT 파일워처 데몬 — chokidar watch + 증분 재파싱 + REST/SSE push (core 소비)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@repo/core": "workspace:*",
+    "better-sqlite3": "^12.10.0",
+    "chokidar": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.3.0",
+    "typescript": "5.9.2"
+  },
+  "bin": {
+    "ssot-daemon": "./dist/index.js"
+  }
+}

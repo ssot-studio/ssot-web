@@ -1,0 +1,327 @@
+@import 'tailwindcss';
+
+/* @xyflow/react 기본 스타일 (노드/엣지/컨트롤 레이아웃). 색상은 아래 시맨틱 토큰으로 덮어쓴다. */
+@import '@xyflow/react/dist/style.css';
+
+/*
+  Tailwind v4 CSS-first 디자인 토큰.
+
+  레이어 순서 (단방향):
+    1. 팔레트   --palette-*               원시 색상값. 컴포넌트가 직접 참조 금지.
+    2. 시맨틱   --background / --tone-* 등  역할 기반. 라이트/다크에서 동일 이름을 재정의.
+    3. 컴포넌트 --panel-* / --graph-* 등    시맨틱을 가리키는 컴포넌트 전용 변수.
+
+  라이트/다크 전환은 동일 시맨틱 변수명을 모드별로 재정의하는 방식이다.
+  컴포넌트(CVA)는 시맨틱/컴포넌트 토큰만 참조하므로 모드 분기 로직을 따로 두지 않는다.
+*/
+
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* ===== 팔레트 (원시값 — 컴포넌트 직접 참조 금지) ===== */
+  --palette-white: #ffffff;
+  --palette-black: #000000;
+
+  --palette-slate-50: #f8fafc;
+  --palette-slate-100: #eef2f6;
+  --palette-slate-200: #e1e7ee;
+  --palette-slate-300: #cbd5e1;
+  --palette-slate-400: #94a3b8;
+  --palette-slate-500: #64748b;
+  --palette-slate-600: #475569;
+  --palette-slate-700: #334155;
+  --palette-slate-800: #1e293b;
+  --palette-slate-900: #0f172a;
+  --palette-slate-950: #0a0f1a;
+
+  --palette-blue-300: #93c5fd;
+  --palette-blue-400: #60a5fa;
+  --palette-blue-500: #3b82f6;
+  --palette-blue-600: #2563eb;
+
+  --palette-emerald-300: #6ee7b7;
+  --palette-emerald-400: #34d399;
+  --palette-emerald-500: #10b981;
+  --palette-emerald-600: #059669;
+
+  --palette-amber-300: #fcd34d;
+  --palette-amber-400: #fbbf24;
+  --palette-amber-500: #f59e0b;
+  --palette-amber-600: #d97706;
+
+  --palette-red-300: #fca5a5;
+  --palette-red-400: #f87171;
+  --palette-red-500: #ef4444;
+  --palette-red-600: #dc2626;
+
+  --palette-violet-300: #c4b5fd;
+  --palette-violet-400: #a78bfa;
+  --palette-violet-500: #8b5cf6;
+  --palette-violet-600: #7c3aed;
+
+  --palette-cyan-300: #67e8f9;
+  --palette-cyan-400: #22d3ee;
+  --palette-cyan-500: #06b6d4;
+  --palette-cyan-600: #0891b2;
+
+  --palette-pink-400: #f472b6;
+  --palette-pink-500: #ec4899;
+
+  --palette-teal-400: #2dd4bf;
+  --palette-teal-500: #14b8a6;
+}
+
+/*
+  시맨틱 토큰을 Tailwind 유틸리티로 노출한다 (@theme inline).
+  inline 이므로 값을 인라이닝하지 않고 var(--…) 참조를 유지 → 라이트/다크 재정의가 그대로 반영된다.
+  이 매핑으로 bg-background / text-foreground / border-border / bg-surface-raised 등이 생성된다.
+*/
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+}
+
+/* ===== 시맨틱 토큰 — 라이트 (기본) ===== */
+:where(:root, [data-theme='light']) {
+  --background: var(--palette-white);
+  --foreground: var(--palette-slate-900);
+
+  --surface: var(--palette-white);
+  --surface-raised: var(--palette-slate-50);
+  --surface-sunken: var(--palette-slate-100);
+  --surface-overlay: var(--palette-white);
+
+  --muted: var(--palette-slate-100);
+  --muted-foreground: var(--palette-slate-500);
+
+  --border: var(--palette-slate-200);
+  --border-strong: var(--palette-slate-300);
+
+  --primary: var(--palette-blue-600);
+  --primary-foreground: var(--palette-white);
+
+  --accent: var(--palette-violet-600);
+  --accent-foreground: var(--palette-white);
+
+  --ring: var(--palette-blue-500);
+
+  /* 상태 톤 — Badge/NodeCard 등이 참조하는 6 시맨틱 톤.
+     각 톤은 solid(bg/fg) + soft(bg/fg) + border 를 가진다. */
+  --tone-neutral: var(--palette-slate-500);
+  --tone-neutral-foreground: var(--palette-white);
+  --tone-neutral-soft-bg: var(--palette-slate-100);
+  --tone-neutral-soft-fg: var(--palette-slate-700);
+  --tone-neutral-border: var(--palette-slate-300);
+
+  --tone-info: var(--palette-blue-600);
+  --tone-info-foreground: var(--palette-white);
+  --tone-info-soft-bg: color-mix(in srgb, var(--palette-blue-500) 14%, transparent);
+  --tone-info-soft-fg: var(--palette-blue-600);
+  --tone-info-border: var(--palette-blue-400);
+
+  --tone-success: var(--palette-emerald-600);
+  --tone-success-foreground: var(--palette-white);
+  --tone-success-soft-bg: color-mix(in srgb, var(--palette-emerald-500) 16%, transparent);
+  --tone-success-soft-fg: var(--palette-emerald-600);
+  --tone-success-border: var(--palette-emerald-400);
+
+  --tone-warning: var(--palette-amber-500);
+  --tone-warning-foreground: var(--palette-slate-900);
+  --tone-warning-soft-bg: color-mix(in srgb, var(--palette-amber-400) 22%, transparent);
+  --tone-warning-soft-fg: var(--palette-amber-600);
+  --tone-warning-border: var(--palette-amber-400);
+
+  --tone-danger: var(--palette-red-500);
+  --tone-danger-foreground: var(--palette-white);
+  --tone-danger-soft-bg: color-mix(in srgb, var(--palette-red-500) 14%, transparent);
+  --tone-danger-soft-fg: var(--palette-red-600);
+  --tone-danger-border: var(--palette-red-400);
+
+  --tone-accent: var(--palette-violet-600);
+  --tone-accent-foreground: var(--palette-white);
+  --tone-accent-soft-bg: color-mix(in srgb, var(--palette-violet-500) 16%, transparent);
+  --tone-accent-soft-fg: var(--palette-violet-600);
+  --tone-accent-border: var(--palette-violet-400);
+
+  /* ===== 컴포넌트 토큰 ===== */
+  --panel-bg: var(--surface);
+  --panel-border: var(--border);
+  --panel-header-bg: var(--surface-raised);
+  --panel-header-fg: var(--foreground);
+  --panel-shadow: 0 1px 2px 0 color-mix(in srgb, var(--palette-black) 6%, transparent);
+
+  --node-card-bg: var(--surface);
+  --node-card-border: var(--border);
+  --node-card-hover-border: var(--border-strong);
+  --node-card-selected-border: var(--ring);
+  --node-card-selected-ring: color-mix(in srgb, var(--ring) 35%, transparent);
+  --node-card-shadow: 0 1px 2px 0 color-mix(in srgb, var(--palette-black) 5%, transparent);
+  --node-card-accent-bar: var(--border-strong);
+
+  --tree-row-hover-bg: var(--surface-sunken);
+  --tree-row-selected-bg: color-mix(in srgb, var(--ring) 14%, transparent);
+  --tree-row-selected-fg: var(--foreground);
+  --tree-guide-line: var(--border);
+  --tree-toggle-fg: var(--muted-foreground);
+  --tree-toggle-hover-fg: var(--foreground);
+
+  --detail-panel-bg: var(--surface);
+  --detail-panel-border: var(--border);
+  --detail-section-label-fg: var(--muted-foreground);
+  --detail-divider: var(--border);
+
+  --markdown-fg: var(--foreground);
+  --markdown-muted-fg: var(--muted-foreground);
+  --markdown-heading-fg: var(--foreground);
+  --markdown-link-fg: var(--primary);
+  --markdown-code-bg: var(--surface-sunken);
+  --markdown-code-fg: var(--accent);
+  --markdown-pre-bg: var(--surface-sunken);
+  --markdown-border: var(--border);
+  --markdown-blockquote-border: var(--border-strong);
+  --markdown-table-header-bg: var(--surface-raised);
+
+  /* 그래프 캔버스 — xyflow 에 CSS 변수로 주입 (인라인 hex 금지) */
+  --graph-bg: var(--surface-sunken);
+  --graph-dot: color-mix(in srgb, var(--muted-foreground) 30%, transparent);
+  --graph-node-bg: var(--surface);
+  --graph-node-fg: var(--foreground);
+  --graph-node-border: var(--border-strong);
+  --graph-node-selected-border: var(--ring);
+  --graph-node-dim-opacity: 0.25;
+  --graph-edge: var(--border-strong);
+  --graph-edge-label-bg: var(--surface);
+  --graph-edge-label-fg: var(--muted-foreground);
+  --graph-control-bg: var(--surface);
+  --graph-control-fg: var(--foreground);
+  --graph-control-border: var(--border);
+  --graph-minimap-bg: var(--surface-raised);
+  --graph-minimap-mask: color-mix(in srgb, var(--palette-black) 8%, transparent);
+}
+
+/* ===== 시맨틱 토큰 — 다크 (동일 이름 재정의) ===== */
+:where(.dark, [data-theme='dark']) {
+  --background: var(--palette-slate-950);
+  --foreground: var(--palette-slate-100);
+
+  --surface: var(--palette-slate-900);
+  --surface-raised: var(--palette-slate-800);
+  --surface-sunken: var(--palette-slate-950);
+  --surface-overlay: var(--palette-slate-800);
+
+  --muted: var(--palette-slate-800);
+  --muted-foreground: var(--palette-slate-400);
+
+  --border: var(--palette-slate-700);
+  --border-strong: var(--palette-slate-600);
+
+  --primary: var(--palette-blue-500);
+  --primary-foreground: var(--palette-slate-950);
+
+  --accent: var(--palette-violet-400);
+  --accent-foreground: var(--palette-slate-950);
+
+  --ring: var(--palette-blue-400);
+
+  --tone-neutral: var(--palette-slate-400);
+  --tone-neutral-foreground: var(--palette-slate-950);
+  --tone-neutral-soft-bg: color-mix(in srgb, var(--palette-slate-400) 18%, transparent);
+  --tone-neutral-soft-fg: var(--palette-slate-200);
+  --tone-neutral-border: var(--palette-slate-600);
+
+  --tone-info: var(--palette-blue-400);
+  --tone-info-foreground: var(--palette-slate-950);
+  --tone-info-soft-bg: color-mix(in srgb, var(--palette-blue-400) 20%, transparent);
+  --tone-info-soft-fg: var(--palette-blue-300);
+  --tone-info-border: var(--palette-blue-500);
+
+  --tone-success: var(--palette-emerald-400);
+  --tone-success-foreground: var(--palette-slate-950);
+  --tone-success-soft-bg: color-mix(in srgb, var(--palette-emerald-400) 20%, transparent);
+  --tone-success-soft-fg: var(--palette-emerald-300);
+  --tone-success-border: var(--palette-emerald-500);
+
+  --tone-warning: var(--palette-amber-400);
+  --tone-warning-foreground: var(--palette-slate-950);
+  --tone-warning-soft-bg: color-mix(in srgb, var(--palette-amber-400) 22%, transparent);
+  --tone-warning-soft-fg: var(--palette-amber-300);
+  --tone-warning-border: var(--palette-amber-500);
+
+  --tone-danger: var(--palette-red-400);
+  --tone-danger-foreground: var(--palette-slate-950);
+  --tone-danger-soft-bg: color-mix(in srgb, var(--palette-red-400) 20%, transparent);
+  --tone-danger-soft-fg: var(--palette-red-300);
+  --tone-danger-border: var(--palette-red-500);
+
+  --tone-accent: var(--palette-violet-400);
+  --tone-accent-foreground: var(--palette-slate-950);
+  --tone-accent-soft-bg: color-mix(in srgb, var(--palette-violet-400) 22%, transparent);
+  --tone-accent-soft-fg: var(--palette-violet-300);
+  --tone-accent-border: var(--palette-violet-500);
+
+  --panel-shadow: 0 1px 2px 0 color-mix(in srgb, var(--palette-black) 40%, transparent);
+  --node-card-shadow: 0 1px 2px 0 color-mix(in srgb, var(--palette-black) 35%, transparent);
+
+  --graph-node-dim-opacity: 0.2;
+  --graph-minimap-mask: color-mix(in srgb, var(--palette-black) 35%, transparent);
+}
+
+/* ===== xyflow 토큰 매핑 — 라이브러리 CSS 변수를 시맨틱 토큰으로 덮어쓴다 ===== */
+.react-flow {
+  --xy-background-color: var(--graph-bg);
+  --xy-edge-stroke: var(--graph-edge);
+  --xy-edge-stroke-selected: var(--graph-node-selected-border);
+  --xy-controls-button-background-color: var(--graph-control-bg);
+  --xy-controls-button-background-color-hover: var(--surface-raised);
+  --xy-controls-button-color: var(--graph-control-fg);
+  --xy-controls-button-color-hover: var(--foreground);
+  --xy-controls-button-border-color: var(--graph-control-border);
+  --xy-minimap-background-color: var(--graph-minimap-bg);
+  --xy-minimap-mask-background-color: var(--graph-minimap-mask);
+  --xy-attribution-background-color: transparent;
+}
+
+/* 엣지 톤별 stroke — SVG path 는 유틸리티 클래스로 색을 줄 수 없어 변수 매핑으로 토큰화한다. */
+.react-flow__edge.ssot-edge .react-flow__edge-path {
+  stroke: var(--graph-edge);
+}
+.react-flow__edge.ssot-edge-tone-info .react-flow__edge-path {
+  stroke: var(--tone-info);
+}
+.react-flow__edge.ssot-edge-tone-success .react-flow__edge-path {
+  stroke: var(--tone-success);
+}
+.react-flow__edge.ssot-edge-tone-warning .react-flow__edge-path {
+  stroke: var(--tone-warning);
+}
+.react-flow__edge.ssot-edge-tone-danger .react-flow__edge-path {
+  stroke: var(--tone-danger);
+}
+.react-flow__edge.ssot-edge-tone-accent .react-flow__edge-path {
+  stroke: var(--tone-accent);
+}
+.react-flow__edge.ssot-edge-tone-neutral .react-flow__edge-path {
+  stroke: var(--graph-edge);
+}
+
+/* 엣지 라벨 — 시맨틱 토큰으로 토큰화 */
+.react-flow__edge .react-flow__edge-textbg {
+  fill: var(--graph-edge-label-bg);
+}
+.react-flow__edge .react-flow__edge-text {
+  fill: var(--graph-edge-label-fg);
+  font-size: 11px;
+}

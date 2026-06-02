@@ -1,0 +1,32 @@
+{
+  "name": "@repo/cli",
+  "version": "0.0.0",
+  "description": "SSOT CLI — build-graph / verify / coverage / serve (core 소비, 결정적 1회성 명령)",
+  "type": "module",
+  "bin": {
+    "ssot": "./bin/ssot.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@repo/daemon": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "5.9.2"
+  }
+}
