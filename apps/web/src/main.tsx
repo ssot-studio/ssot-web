@@ -4,6 +4,17 @@ import '@repo/ui/styles.css';
 import './styles/app.css';
 import { App } from './App';
 
+// W3C ResizeObserver 사양이 의도적으로 던지는 회수성 경고 — 실제 예외 아님.
+// @xyflow/react 의 Controls/MiniMap/pane 이 같은 tick 에 재측정해 viewport·layout 변화마다 발생한다.
+// window error 채널에 새는 것을 차단해 agent-devtools 카운터가 잡지 않게 한다.
+const RO_LOOP_MSG = /^ResizeObserver loop (completed with undelivered notifications|limit exceeded)/;
+window.addEventListener('error', (event) => {
+  if (typeof event.message === 'string' && RO_LOOP_MSG.test(event.message)) {
+    event.stopImmediatePropagation();
+    event.preventDefault();
+  }
+});
+
 // agent-devtools 위젯은 여기서 수동 mount 하지 않는다 (의도된 부재).
 // `@agent-devtools/vite` 플러그인이 `apply: 'serve'` 로 dev 서버에서만 동작하며
 // 위젯 bootstrap 을 dev HTML 에 주입한다 — 즉 dev-only mount 는 플러그인이 소유한다
