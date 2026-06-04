@@ -12,6 +12,31 @@
 
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
+/* 베이스 색 네임스페이스를 이 앱 빌드의 Tailwind 테마에 등록한다.
+   @repo/ui(globals.css)의 @theme inline 은 그 패키지 빌드에서만 유틸을 생성하므로,
+   앱(RootLayout 등)이 직접 쓰는 bg-background / text-foreground / border-border /
+   bg-border / bg-primary / ring-ring 등은 이 앱 빌드에 등록돼 있지 않으면 아예 생성되지
+   않아(=규칙 없음) 투명으로 떨어진다 — 다크에서 좌측 영역이 흰색으로 비치는 원인.
+   inline 이라 값을 인라이닝하지 않고 var() 참조를 유지하므로 라이트/다크 토큰 재정의가
+   그대로 반영된다. 런타임 변수(--background 등)는 globals.css 가 제공한다. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-overlay: var(--surface-overlay);
+}
+
 @theme {
   /* ── 팔레트 (의미 부여 전 원색) ── */
   --color-slate-50: #f8fafc;
