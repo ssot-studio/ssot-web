@@ -2,4 +2,6 @@ node_modules/
 dist/
 .turbo/
 *.tsbuildinfo
+# 로컬 미리보기용 SSOT 데이터 심볼릭 링크 — 절대경로라 CI/clone 에서 dangling. 커밋 금지.
 apps/web/public/ssot
+apps/web/public/ssot-*
