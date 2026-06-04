@@ -1,6 +1,7 @@
 {
   "name": "@repo/core",
   "version": "0.3.0",
+  "license": "MIT",
   "type": "module",
   "exports": { ".": { "types": "./types/index.d.ts", "import": "./core.mjs" } },
   "files": ["core.mjs", "types"]

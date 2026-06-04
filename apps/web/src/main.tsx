@@ -4,16 +4,26 @@ import '@repo/ui/styles.css';
 import './styles/app.css';
 import { App } from './App';
 
-// W3C ResizeObserver 사양이 의도적으로 던지는 회수성 경고 — 실제 예외 아님.
-// @xyflow/react 의 Controls/MiniMap/pane 이 같은 tick 에 재측정해 viewport·layout 변화마다 발생한다.
-// window error 채널에 새는 것을 차단해 agent-devtools 카운터가 잡지 않게 한다.
-const RO_LOOP_MSG = /^ResizeObserver loop (completed with undelivered notifications|limit exceeded)/;
-window.addEventListener('error', (event) => {
-  if (typeof event.message === 'string' && RO_LOOP_MSG.test(event.message)) {
-    event.stopImmediatePropagation();
-    event.preventDefault();
-  }
-});
+// W3C ResizeObserver loop-detection 은 콜백이 동기로 호출됐을 때만 트립된다 —
+// 콜백을 다음 frame 으로 미루면 spec 의 loop 가 형성되지 않아 브라우저가
+// `error` 를 dispatch 하지 않는다. capture-phase 로 일찍 등록된 instrumentation
+// (agent-devtools 등) 의 사후 차단 race 자체가 필요 없어진다.
+const NativeResizeObserver = window.ResizeObserver;
+if (NativeResizeObserver) {
+  window.ResizeObserver = class extends NativeResizeObserver {
+    constructor(callback: ResizeObserverCallback) {
+      super((entries, observer) => {
+        window.requestAnimationFrame(() => {
+          try {
+            callback(entries, observer);
+          } catch {
+            /* disconnect 된 observer 가 한 tick 늦게 호출되는 경우 보호. */
+          }
+        });
+      });
+    }
+  };
+}
 
 // agent-devtools 위젯은 여기서 수동 mount 하지 않는다 (의도된 부재).
 // `@agent-devtools/vite` 플러그인이 `apply: 'serve'` 로 dev 서버에서만 동작하며

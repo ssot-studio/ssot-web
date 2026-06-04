@@ -1,6 +1,7 @@
 {
   "name": "ssot-web-workspace",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "build": "pnpm --filter @repo/ui build && pnpm --filter web build",

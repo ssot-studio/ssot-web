@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useParams } from '@tanstack/react-router';
 import { Button } from '@/components/Button';
+import { SearchBox } from '@/components/SearchBox';
 import { cn } from '@/lib/cn';
 import type { ViewName } from '@/router';
 
@@ -29,11 +30,11 @@ export function RootLayout(): React.JSX.Element {
 
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
-      <header className="flex h-12 shrink-0 items-center gap-4 border-b border-border px-4">
+      <header className="flex h-14 shrink-0 items-center gap-4 border-b border-border px-4">
         <img
           src={`${import.meta.env.BASE_URL}logo.svg`}
           alt="SSOT Studio — Single Source of Truth Explorer"
-          className="h-8 w-auto"
+          className="h-10 w-auto"
         />
         <nav className="flex items-center gap-1">
           {VIEWS.map((v) => (
@@ -53,7 +54,8 @@ export function RootLayout(): React.JSX.Element {
             </Link>
           ))}
         </nav>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-3">
+          <SearchBox />
           <Button size="sm" variant="ghost" onClick={toggleTheme}>
             {theme === 'dark' ? '라이트' : '다크'}
           </Button>
