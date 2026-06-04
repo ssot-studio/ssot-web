@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="SSOT Studio">
+  <rect width="120" height="120" rx="26" fill="#0b1020"/>
+  <g stroke="#6366f1" stroke-width="2.5" opacity="0.45" stroke-linecap="round">
+    <line x1="60" y1="60" x2="32" y2="34"/>
+    <line x1="60" y1="60" x2="90" y2="40"/>
+    <line x1="60" y1="60" x2="38" y2="90"/>
+    <line x1="60" y1="60" x2="88" y2="84"/>
+  </g>
+  <circle cx="32" cy="34" r="8" fill="#818cf8"/>
+  <circle cx="90" cy="40" r="8" fill="#a78bfa"/>
+  <circle cx="38" cy="90" r="8" fill="#34d399"/>
+  <circle cx="88" cy="84" r="8" fill="#fbbf24"/>
+  <circle cx="60" cy="60" r="17" fill="#6366f1"/>
+  <text x="60" y="66" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="16" font-weight="700" fill="#ffffff">S</text>
+</svg>

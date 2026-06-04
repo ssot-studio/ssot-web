@@ -30,15 +30,11 @@ export function RootLayout(): React.JSX.Element {
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
       <header className="flex h-12 shrink-0 items-center gap-4 border-b border-border px-4">
-        <div className="flex items-center gap-2">
-          <img
-            src={`${import.meta.env.BASE_URL}logo.svg`}
-            alt="SSOT Studio"
-            className="h-6 w-6 rounded-md"
-          />
-          <span className="text-sm font-semibold">SSOT Studio</span>
-          <span className="text-xs text-[var(--foreground-subtle)]">Single Source of Truth Explorer</span>
-        </div>
+        <img
+          src={`${import.meta.env.BASE_URL}logo.svg`}
+          alt="SSOT Studio — Single Source of Truth Explorer"
+          className="h-8 w-auto"
+        />
         <nav className="flex items-center gap-1">
           {VIEWS.map((v) => (
             <Link key={v.id} to="/$view" params={{ view: v.id }} search={(prev) => prev}>
