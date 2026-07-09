@@ -39,8 +39,6 @@ export type {
   GraphCanvasProps,
   GraphCanvasNode,
   GraphCanvasEdge,
-  GraphLayoutDirection,
-  GraphColorMode,
 } from './components/GraphCanvas';
 
 export { DetailPanel } from './components/DetailPanel';

@@ -12,8 +12,6 @@ import type { Catalog } from '@/domain/types';
 export type ViewName = 'graph' | 'tree' | 'matrix';
 const VALID_VIEWS: readonly ViewName[] = ['graph', 'tree', 'matrix'];
 
-export type LayoutDir = 'LR' | 'TB';
-
 /**
  * /$view 의 URL 검색 파라미터 — 필터·그래프 뷰 상태의 단일 진실(SoT).
  * 컴포넌트 로컬 state 가 아니라 URL 이 진실이므로 새로고침·공유·뒤로가기가 그대로 복원된다.
@@ -26,8 +24,6 @@ export interface ViewSearch {
   tags?: string[];
   /** 숨긴 노드 kind — 그래프 kind 필터(없음 = 전체 표시). */
   hideKinds?: string[];
-  /** 그래프 레이아웃 방향(기본 'LR'). */
-  dir?: LayoutDir;
   /** 포커스 모드 — 선택 노드 1-hop 강조(기본 true; off 일 때만 false 로 실림). */
   focus?: boolean;
   /** ego-graph 탐색 깊이 1~4(기본 1). */
@@ -71,7 +67,6 @@ const viewRoute = createRoute({
       node: typeof search.node === 'string' ? search.node : undefined,
       tags: strArray(search.tags),
       hideKinds: strArray(search.hideKinds),
-      dir: search.dir === 'TB' || search.dir === 'LR' ? search.dir : undefined,
       focus: typeof search.focus === 'boolean' ? search.focus : undefined,
       depth,
     };
