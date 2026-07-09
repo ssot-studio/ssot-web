@@ -9,8 +9,9 @@ import { useResizablePanel } from '@/hooks/useResizablePanel';
 import { useDraggablePanel } from '@/hooks/useDraggablePanel';
 import type { ViewName } from '@/router';
 
-// 뷰 컴포넌트는 지연 로딩 — 가장 무거운 의존성(react-flow/dagre)은 그래프 뷰를 실제로 열 때만
-// 끌어온다. 트리·표가 추천 뷰인 카탈로그는 react-flow 를 아예 받지 않아 초기 로드가 가볍다.
+// 뷰 컴포넌트는 지연 로딩 — 가장 무거운 의존성(three/WebGL 3D 그래프)은 그래프 뷰를 실제로
+// 열 때만 끌어온다(@repo/ui GraphCanvas 도 내부 lazy 경계로 3D 청크를 분리). 트리·표가 추천 뷰인
+// 카탈로그는 3D 그래프 청크를 아예 받지 않아 초기 로드가 가볍다.
 const GraphViewer = lazy(() =>
   import('@/views/GraphViewer').then((m) => ({ default: m.GraphViewer })),
 );
