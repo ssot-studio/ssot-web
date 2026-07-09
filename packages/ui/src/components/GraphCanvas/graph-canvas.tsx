@@ -1,97 +1,24 @@
-import { useEffect, useMemo } from 'react';
-import {
-  Background,
-  BackgroundVariant,
-  Controls,
-  MiniMap,
-  ReactFlow,
-  ReactFlowProvider,
-  useEdgesState,
-  useNodesState,
-  type NodeMouseHandler,
-  type NodeTypes,
-  type Node,
-} from '@xyflow/react';
+import { lazy, Suspense } from 'react';
 import { cn } from '@/lib';
-import { SsotNode } from './ssot-node';
-import { computeDimmedIds, layoutGraph, type SsotNodeData } from './graph-layout';
 import type { GraphCanvasProps } from './graph-canvas.types';
 
-const nodeTypes: NodeTypes = { ssot: SsotNode };
+// 무거운 peer(three, react-force-graph-3d, troika)는 이 dynamic import 로만 도달한다 —
+// 구현 모듈(graph-canvas-3d)을 정적 재-export 하면 같은 청크로 병합되어 lazy 격리(SCN-1)가
+// 무산되므로, 오직 여기서만 import 한다.
+const LazyGraphCanvas3D = lazy(() =>
+  import('./graph-canvas-3d').then((m) => ({ default: m.GraphCanvas3D })),
+);
 
-function GraphCanvasInner({
-  nodes,
-  edges,
-  selectedId,
-  onNodeSelect,
-  direction = 'LR',
-  focusNeighbors = false,
-  colorMode = 'light',
-  showMiniMap = true,
-  showControls = true,
-}: Omit<GraphCanvasProps, 'className' | 'data-uid' | 'emptyState'>): React.JSX.Element {
-  const { rfNodes, rfEdges } = useMemo(() => {
-    const dimmedIds =
-      focusNeighbors && selectedId
-        ? computeDimmedIds(nodes, edges, selectedId)
-        : undefined;
-    const laid = layoutGraph(nodes, edges, direction, { selectedId, dimmedIds });
-    return { rfNodes: laid.nodes, rfEdges: laid.edges };
-  }, [nodes, edges, direction, selectedId, focusNeighbors]);
-
-  const [stateNodes, setStateNodes, onNodesChange] = useNodesState<Node<SsotNodeData>>(rfNodes);
-  const [stateEdges, setStateEdges, onEdgesChange] = useEdgesState(rfEdges);
-
-  // 입력/레이아웃이 바뀌면 상태를 재계산된 그래프로 동기화한다.
-  useEffect(() => {
-    setStateNodes(rfNodes);
-  }, [rfNodes, setStateNodes]);
-  useEffect(() => {
-    setStateEdges(rfEdges);
-  }, [rfEdges, setStateEdges]);
-
-  const handleNodeClick: NodeMouseHandler = (_event, node) => {
-    onNodeSelect?.(node.id);
-  };
-
-  return (
-    <ReactFlow
-      nodes={stateNodes}
-      edges={stateEdges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onNodeClick={handleNodeClick}
-      nodeTypes={nodeTypes}
-      colorMode={colorMode}
-      fitView
-      proOptions={{ hideAttribution: true }}
-      nodesDraggable
-      nodesConnectable={false}
-      elementsSelectable
-      minZoom={0.1}
-      maxZoom={2}
-    >
-      <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="var(--graph-dot)" />
-      {showControls ? <Controls showInteractive={false} /> : null}
-      {showMiniMap ? (
-        <MiniMap
-          pannable
-          zoomable
-          nodeColor="var(--graph-node-border)"
-          maskColor="var(--graph-minimap-mask)"
-        />
-      ) : null}
-    </ReactFlow>
-  );
+function GraphFallback({ className }: { className?: string }): React.JSX.Element {
+  return <div aria-hidden className={cn('h-full w-full animate-pulse bg-(--graph-bg)', className)} />;
 }
 
 /**
- * @xyflow/react 그래프 시각화 래퍼. dagre 로 방향성 계층 레이아웃을 계산한다.
- * 도메인 무지 — GraphCanvasNode/Edge view-model 과 시맨틱 tone 만 받는다.
- * 색상은 전부 시맨틱 토큰; 라이트/다크는 colorMode + 토큰 재정의로 자동 대응한다.
+ * 도메인 무지 force-directed 3D 그래프 컴포넌트 (WebGL).
  *
- * focus mode: focusNeighbors + selectedId 지정 시 선택 노드의 1-hop 이웃만 강조하고
- * 나머지를 dim 처리한다 (편중 그래프 탐색용).
+ * 무거운 3D peer 는 lazy 경계 뒤에서만 로드되므로, 그래프 뷰를 실제로 열 때만 청크가 내려온다.
+ * 색은 kind 가 아니라 노드/엣지의 `colorToken`(시맨틱 토큰)으로만 받아 `useSemanticColors` 로
+ * 계산값 해석한다 — 라이트/다크 라이브 반응, hex 하드코딩 없음. kind→토큰 매핑은 호출부 책임.
  */
 export function GraphCanvas({
   className,
@@ -106,7 +33,7 @@ export function GraphCanvas({
         data-uid={dataUid}
         className={cn(
           'flex h-full w-full items-center justify-center bg-(--graph-bg) text-sm text-muted-foreground',
-          className
+          className,
         )}
       >
         {emptyState ?? 'No graph data'}
@@ -116,9 +43,9 @@ export function GraphCanvas({
 
   return (
     <div data-uid={dataUid} className={cn('h-full w-full', className)}>
-      <ReactFlowProvider>
-        <GraphCanvasInner nodes={nodes} {...rest} />
-      </ReactFlowProvider>
+      <Suspense fallback={<GraphFallback className={className} />}>
+        <LazyGraphCanvas3D nodes={nodes} {...rest} />
+      </Suspense>
     </div>
   );
 }
