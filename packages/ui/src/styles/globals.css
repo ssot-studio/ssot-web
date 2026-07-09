@@ -1,8 +1,5 @@
 @import 'tailwindcss';
 
-/* @xyflow/react 기본 스타일 (노드/엣지/컨트롤 레이아웃). 색상은 아래 시맨틱 토큰으로 덮어쓴다. */
-@import '@xyflow/react/dist/style.css';
-
 /*
   Tailwind v4 CSS-first 디자인 토큰.
 
@@ -194,22 +191,8 @@
   --markdown-blockquote-border: var(--border-strong);
   --markdown-table-header-bg: var(--surface-raised);
 
-  /* 그래프 캔버스 — xyflow 에 CSS 변수로 주입 (인라인 hex 금지) */
+  /* 그래프 캔버스 배경 — force-directed 3D 그래프(GraphCanvas)의 빈 상태·로딩 폴백 배경. */
   --graph-bg: var(--surface-sunken);
-  --graph-dot: color-mix(in srgb, var(--muted-foreground) 30%, transparent);
-  --graph-node-bg: var(--surface);
-  --graph-node-fg: var(--foreground);
-  --graph-node-border: var(--border-strong);
-  --graph-node-selected-border: var(--ring);
-  --graph-node-dim-opacity: 0.25;
-  --graph-edge: var(--border-strong);
-  --graph-edge-label-bg: var(--surface);
-  --graph-edge-label-fg: var(--muted-foreground);
-  --graph-control-bg: var(--surface);
-  --graph-control-fg: var(--foreground);
-  --graph-control-border: var(--border);
-  --graph-minimap-bg: var(--surface-raised);
-  --graph-minimap-mask: color-mix(in srgb, var(--palette-black) 8%, transparent);
 }
 
 /* ===== 시맨틱 토큰 — 다크 (동일 이름 재정의) ===== */
@@ -274,54 +257,4 @@
 
   --panel-shadow: 0 1px 2px 0 color-mix(in srgb, var(--palette-black) 40%, transparent);
   --node-card-shadow: 0 1px 2px 0 color-mix(in srgb, var(--palette-black) 35%, transparent);
-
-  --graph-node-dim-opacity: 0.2;
-  --graph-minimap-mask: color-mix(in srgb, var(--palette-black) 35%, transparent);
-}
-
-/* ===== xyflow 토큰 매핑 — 라이브러리 CSS 변수를 시맨틱 토큰으로 덮어쓴다 ===== */
-.react-flow {
-  --xy-background-color: var(--graph-bg);
-  --xy-edge-stroke: var(--graph-edge);
-  --xy-edge-stroke-selected: var(--graph-node-selected-border);
-  --xy-controls-button-background-color: var(--graph-control-bg);
-  --xy-controls-button-background-color-hover: var(--surface-raised);
-  --xy-controls-button-color: var(--graph-control-fg);
-  --xy-controls-button-color-hover: var(--foreground);
-  --xy-controls-button-border-color: var(--graph-control-border);
-  --xy-minimap-background-color: var(--graph-minimap-bg);
-  --xy-minimap-mask-background-color: var(--graph-minimap-mask);
-  --xy-attribution-background-color: transparent;
-}
-
-/* 엣지 톤별 stroke — SVG path 는 유틸리티 클래스로 색을 줄 수 없어 변수 매핑으로 토큰화한다. */
-.react-flow__edge.ssot-edge .react-flow__edge-path {
-  stroke: var(--graph-edge);
-}
-.react-flow__edge.ssot-edge-tone-info .react-flow__edge-path {
-  stroke: var(--tone-info);
-}
-.react-flow__edge.ssot-edge-tone-success .react-flow__edge-path {
-  stroke: var(--tone-success);
-}
-.react-flow__edge.ssot-edge-tone-warning .react-flow__edge-path {
-  stroke: var(--tone-warning);
-}
-.react-flow__edge.ssot-edge-tone-danger .react-flow__edge-path {
-  stroke: var(--tone-danger);
-}
-.react-flow__edge.ssot-edge-tone-accent .react-flow__edge-path {
-  stroke: var(--tone-accent);
-}
-.react-flow__edge.ssot-edge-tone-neutral .react-flow__edge-path {
-  stroke: var(--graph-edge);
-}
-
-/* 엣지 라벨 — 시맨틱 토큰으로 토큰화 */
-.react-flow__edge .react-flow__edge-textbg {
-  fill: var(--graph-edge-label-bg);
-}
-.react-flow__edge .react-flow__edge-text {
-  fill: var(--graph-edge-label-fg);
-  font-size: 11px;
 }
