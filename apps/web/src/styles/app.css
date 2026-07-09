@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import '@xyflow/react/dist/style.css';
 
 /* web 앱 전용 스타일 진입점.
    @repo/ui 의 globals.css 가 베이스 시맨틱 토큰(--background/--foreground/--border)을
@@ -207,29 +206,4 @@
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
-}
-
-/* ── xyflow 토큰화 (인라인 hex 금지 — CSS 변수만) ── */
-.react-flow {
-  --xy-background-color: var(--surface-sunken);
-  --xy-edge-stroke: var(--border-strong);
-  --xy-edge-stroke-selected: var(--primary);
-  background: var(--surface-sunken);
-}
-.react-flow__controls-button {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  color: var(--foreground);
-}
-.react-flow__controls-button:hover {
-  background: var(--surface-hover);
-}
-.react-flow__controls-button svg {
-  fill: var(--foreground);
-}
-.react-flow__minimap {
-  background: var(--surface-raised);
-}
-.react-flow__attribution {
-  display: none;
 }

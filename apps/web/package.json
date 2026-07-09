@@ -12,12 +12,10 @@
     "lint": "eslint \"src/**/*.{ts,tsx}\""
   },
   "dependencies": {
-    "@dagrejs/dagre": "^1.1.5",
     "@repo/core": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.62.0",
     "@tanstack/react-router": "^1.131.27",
-    "@xyflow/react": "^12.9.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "minisearch": "^7.2.0",
